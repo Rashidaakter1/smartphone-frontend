@@ -1,8 +1,10 @@
 
 
-import { Layout, Menu } from 'antd';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Button, Layout, Menu } from 'antd';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import logo from "../../assets/icons/ebuy.svg"
+import { useAppDispatch } from '../../redux/hooks';
+import { logout } from '../../redux/features/auth/authSlice';
 const { Header, Content, Footer, Sider } = Layout;
 
 const items = [{
@@ -32,6 +34,13 @@ const items = [{
 ]
 
 const MainLayout = () => {
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        dispatch(logout())
+        navigate("/auth/signin")
+    }
     return (
         <Layout style={{ height: "100vh" }}>
             <Sider
@@ -48,7 +57,7 @@ const MainLayout = () => {
                 <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']} items={items} />
             </Sider>
             <Layout>
-                <Header style={{ padding: 0 }} />
+                <Header ><Button onClick={() => handleLogout()}>logout</Button></Header>
                 <Content style={{ margin: '24px 16px 0' }}>
                     <div
                         style={{

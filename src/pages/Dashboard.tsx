@@ -1,9 +1,13 @@
+import { useGetUserQuery } from "../redux/features/auth/authApi"
+
 
 
 const Dashboard = () => {
-  return (
-    <div>Dashboard</div>
-  )
+    const { data, error, isLoading } = useGetUserQuery(undefined)
+    console.log(data)
+    return (
+        <div>Dashboard </div>
+    )
 }
 
 export default Dashboard
