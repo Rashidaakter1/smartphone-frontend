@@ -14,7 +14,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/",
   credentials: "include",
   prepareHeaders: (headers: Headers, { getState }) => {
-    const token = (getState() as RootState).auth.token;
+    const token = (getState() as RootState)?.auth?.token;
     if (token) {
       headers.set("authorization", token);
     }
@@ -54,5 +54,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
+  tagTypes: ["product"],
   endpoints: () => ({}),
 });

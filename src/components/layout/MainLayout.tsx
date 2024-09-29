@@ -42,16 +42,11 @@ const MainLayout = () => {
         navigate("/auth/signin")
     }
     return (
-        <Layout style={{ height: "100vh" }}>
+        <Layout style={{ minHeight: "100vh" }}>
             <Sider
                 breakpoint="lg"
                 collapsedWidth="0"
-                onBreakpoint={(broken) => {
-                    console.log(broken);
-                }}
-                onCollapse={(collapsed, type) => {
-                    console.log(collapsed, type);
-                }}
+
             >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} ><img style={{ width: "80px", marginBlock: "12px" }} src={logo} alt="ebay-logo" /></div>
                 <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']} items={items} />

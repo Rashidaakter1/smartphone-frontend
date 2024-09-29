@@ -1,46 +1,52 @@
-import React from 'react';
+
+
+import React, { useEffect } from 'react';
 import { Modal, Input, InputNumber, Select, DatePicker, Checkbox, Row, Col } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
-import { useCreateProductMutation } from '../../redux/features/product/productApi';
+import { useCreateProductMutation, useGetProductByIdQuery, useUpdateProductMutation } from '../../redux/features/product/productApi';
 import { toast } from 'sonner';
+import { AddProductModalProps } from './AddProductModal';
+import moment from 'moment';
+
 
 const { Option } = Select;
 
-export interface AddProductModalProps {
-    visible: boolean;
-    onCancel: () => void;
-    onOk: (values: any) => void;
-    productId?: string
-}
+const EditProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, onOk, productId }) => {
+    const { data } = useGetProductByIdQuery(productId)
+const [updateProduct]=useUpdateProductMutation()
+    const product = data?.data
+    const { control, handleSubmit, reset } = useForm();
+   
 
-const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, onOk }) => {
-
-    const { control, handleSubmit, reset } = useForm({
-        defaultValues: {
-            name: 'Iphone  pro max',
-            price: 999,
-            brand: 'Apple',
-            model: 'iPhone',
-            quantity: 12,
-            releaseDate: "",
-            operatingSystem: 'ios',
-            screenSize: 6.1,
-            storageCapacity: 128,
-            batteryCapacity: 3000,
-            mainCameraQuality: 12,
-            frontCameraQuality: 12,
-            isWaterResistant: true,
-            has5G: true,
-            hasWirelessCharging: true
+    useEffect(() => {
+       
+        if (product) {
+            reset({
+                name: product.name,
+                price: product.price,
+                brand: product.brand,
+                model: product.model,
+                storageCapacity: product.storageCapacity,
+                mainCameraQuality: product.cameraQuality?.main,
+                frontCameraQuality: product.cameraQuality?.front,
+                quantity: product.quantity,
+                releaseDate: product.releaseDate ? moment(product.releaseDate) : null,
+                operatingSystem: product.operatingSystem,
+                screenSize: product.screenSize,
+                batteryCapacity: product.batteryCapacity,
+                isWaterResistant: product.additionalFeatures?.isWaterResistant,
+                has5G: product.additionalFeatures?.has5G,
+                hasWirelessCharging: product.additionalFeatures?.hasWirelessCharging,
+            });
         }
-    });
-    const [addProduct] = useCreateProductMutation()
+    }, [product, reset]);
 
     const onSubmit = async (data: any) => {
-        const toastId = toast.loading('product is adding...');
+        const toastId = toast.loading('product is updating...');
         try {
             const formattedData = {
                 ...data,
+                releaseDate: data.releaseDate ? data.releaseDate.format('YYYY-MM-DD') : null,
                 cameraQuality: {
                     main: data.mainCameraQuality,
                     front: data.frontCameraQuality
@@ -60,11 +66,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
             delete formattedData.hasWirelessCharging;
 
             console.log(formattedData);
-            const res = await addProduct(formattedData)
-            if (res?.data) {
-                toast.success("Product added successfully", { id: toastId, duration: 2000 })
+            const updatedProductData ={
+                id:productId,
+                body:formattedData
             }
-
+            const res = await updateProduct(updatedProductData)
+            if (res?.data) {
+                toast.success("Product updated successfully", { id: toastId, duration: 2000 })
+            }
+            
             console.log(res)
             onOk(formattedData);
             reset();
@@ -74,11 +84,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
         }
 
     };
-
     return (
         <Modal
 
-            title="Add New Product"
+            title="Edit Product"
             visible={visible}
             onCancel={onCancel}
             onOk={handleSubmit(onSubmit)}
@@ -89,6 +98,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         <Controller
                             name="name"
                             control={control}
+                            defaultValue={product?.name}
                             rules={{ required: 'Product Name is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -101,6 +111,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         <Controller
                             name="price"
                             control={control}
+                            defaultValue={product?.price}
                             rules={{ required: 'Price is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -117,6 +128,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         <Controller
                             name="brand"
                             control={control}
+                            defaultValue={product?.brand}
                             rules={{ required: 'Brand is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -130,6 +142,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         <Controller
                             name="model"
                             control={control}
+                            defaultValue={product?.model}
                             rules={{ required: 'Model is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -143,6 +156,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         <Controller
                             name="storageCapacity"
                             control={control}
+                            defaultValue={product?.storageCapacity}
                             rules={{ required: 'Storage Capacity is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -156,6 +170,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         <Controller
                             name="mainCameraQuality"
                             control={control}
+                            defaultValue={product?.cameraQuality?.main}
                             rules={{ required: 'Main Camera Quality is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -168,6 +183,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
 
                         <Controller
                             name="frontCameraQuality"
+                            defaultValue={product?.cameraQuality?.front}
                             control={control}
                             rules={{ required: 'Front Camera Quality is required' }}
                             render={({ field, fieldState: { error } }) => (
@@ -182,6 +198,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                     <Col xs={24} sm={12} md={12} lg={12}>
                         <Controller
                             name="quantity"
+                            defaultValue={product?.quantity}
                             control={control}
                             rules={{ required: 'quantity is required' }}
                             render={({ field, fieldState: { error } }) => (
@@ -195,8 +212,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                                 </div>
                             )}
                         />
+
                         <Controller
                             name="releaseDate"
+                            defaultValue={product?.releaseDate}
                             control={control}
                             rules={{ required: 'releaseDate is required' }}
                             render={({ field, fieldState: { error } }) => (
@@ -204,6 +223,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                                     <label>releaseDate</label>
                                     <DatePicker
                                         {...field}
+                                        value={field.value ? moment(field.value) : null}
                                         style={{ width: '100%' }}
                                     />
                                     {error && <span style={{ color: 'red' }}>{error.message}</span>}
@@ -212,6 +232,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         />
                         <Controller
                             name="operatingSystem"
+                            defaultValue={product?.operatingSystem}
                             control={control}
                             rules={{ required: 'Operating System is required' }}
                             render={({ field, fieldState: { error } }) => (
@@ -229,6 +250,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
 
                         <Controller
                             name="screenSize"
+                            defaultValue={product?.screenSize}
                             control={control}
                             rules={{ required: 'Screen Size is required' }}
                             render={({ field, fieldState: { error } }) => (
@@ -241,9 +263,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         />
                         <Controller
                             name="batteryCapacity"
-                            control=
-
-                            {control}
+                            defaultValue={product?.batteryCapacity}
+                            control={control}
                             rules={{ required: 'Battery Capacity is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <div style={{ marginBottom: 16 }}>
@@ -258,6 +279,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                             <div>
                                 <Controller
                                     name="isWaterResistant"
+                                    defaultValue={product?.additionalFeatures?.isWaterResistant}
                                     control={control}
                                     render={({ field }) => (
                                         <Checkbox {...field} checked={field.value}>
@@ -269,6 +291,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                             <div>
                                 <Controller
                                     name="has5G"
+                                    defaultValue={product?.additionalFeatures?.has5G}
                                     control={control}
                                     render={({ field }) => (
                                         <Checkbox {...field} checked={field.value}>
@@ -279,6 +302,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                             </div>
                             <div>
                                 <Controller
+                                    defaultValue={product?.additionalFeatures?.hasWirelessCharging}
                                     name="hasWirelessCharging"
                                     control={control}
                                     render={({ field }) => (
@@ -291,18 +315,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ visible, onCancel, on
                         </div>
                     </Col>
                 </Row>
-
-
-
-
-
-
-
-
-
             </form>
         </Modal>
-    );
-};
+    )
+}
 
-export default AddProductModal;
+export default EditProductModal
