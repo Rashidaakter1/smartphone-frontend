@@ -1,40 +1,40 @@
 import { baseApi } from "../../api/baseApi";
 
-const productApi = baseApi.injectEndpoints({
+const salesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProduct: builder.query({
+    getSales: builder.query({
       query: () => ({
-        url: "/product",
+        url: "/sales",
         method: "GET",
       }),
       providesTags: ["sales", "product"],
     }),
-    getProductById: builder.query({
+    getSalesById: builder.query({
       query: (id) => ({
-        url: `/product/${id}`,
+        url: `/sales/${id}`,
         method: "GET",
       }),
       providesTags: ["sales", "product"],
     }),
-    createProduct: builder.mutation({
+    createSales: builder.mutation({
       query: (data) => ({
-        url: "/product/create-product",
+        url: "/sales/create",
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["sales", "product"],
     }),
-    updateProduct: builder.mutation({
+    updateSales: builder.mutation({
       query: (data) => ({
-        url: `/product/${data.id}`,
+        url: `/sales/${data.id}`,
         method: "PUT",
         body: data.body,
       }),
       invalidatesTags: ["sales", "product"],
     }),
-    deleteProduct: builder.mutation({
+    deleteSales: builder.mutation({
       query: (id) => ({
-        url: `/product/${id}`,
+        url: `/sales/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["sales", "product"],
@@ -43,9 +43,9 @@ const productApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useGetProductQuery,
-  useCreateProductMutation,
-  useDeleteProductMutation,
-  useUpdateProductMutation,
-  useGetProductByIdQuery
-} = productApi;
+  useCreateSalesMutation,
+  useDeleteSalesMutation,
+  useUpdateSalesMutation,
+  useGetSalesByIdQuery,
+  useGetSalesQuery,
+} = salesApi;

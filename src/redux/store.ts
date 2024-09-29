@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/auth/authSlice";
 import productReducer from "./features/product/productSlice";
+import salesReducer from "./features/sales/salesSlice";
 import { baseApi } from "./api/baseApi";
 import {
   persistStore,
@@ -26,6 +27,7 @@ export const store = configureStore({
   reducer: {
     auth: persistedReducer,
     product: productReducer,
+    sales: salesReducer,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

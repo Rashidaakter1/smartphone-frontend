@@ -14,22 +14,17 @@ const items = [{
 {
     key: "Product",
     label: <NavLink to="/product">Product</NavLink>,
-    children: [
-        {
-            key: "create",
-            label: "Create"
-        }
-    ]
+
 },
 {
     key: "Sales Management",
     label: <NavLink to="/sales-management">Sales Management</NavLink>,
-    children: [
-        {
-            key: "create",
-            label: "Create"
-        }
-    ]
+    // children: [
+    //     {
+    //         key: "create",
+    //         label: "Create"
+    //     }
+    // ]
 }
 ]
 

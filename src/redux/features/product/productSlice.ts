@@ -34,7 +34,7 @@ const initialState: TProductInitialState = {
 };
 
 export const productSlice = createSlice({
-  name: "auth",
+  name: "product",
   initialState,
   reducers: {
     // setUser: (state, action) => {

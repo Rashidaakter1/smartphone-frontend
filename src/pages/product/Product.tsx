@@ -5,6 +5,7 @@ import { CheckCircleOutlined, CloseCircleOutlined, PlusOutlined, EditOutlined, D
 import AddProductModal from "./AddProductModal";
 import { toast } from 'sonner';
 import EditProductModal from './EditProductModal';
+import SaleModal from '../SalesManagement/SaleModal';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -15,6 +16,7 @@ const Product: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [productId, setProductId] = useState("");
     const [isEditModalVisible, setEditIsModalVisible] = useState(false);
+    const [isSellModalVisible, setSellIsModalVisible] = useState(false);
     const screens = useBreakpoint();
 
     const handleDelete = async (id: string) => {
@@ -32,6 +34,11 @@ const Product: React.FC = () => {
         setProductId(id)
         setEditIsModalVisible(true)
     };
+
+    const handleSell = (id: string) => {
+        setProductId(id)
+        setSellIsModalVisible(true)
+    }
 
     if (isLoading) {
         return <Skeleton active />;
@@ -188,6 +195,12 @@ const Product: React.FC = () => {
                             Delete
                         </Button>
                     </Popconfirm>
+
+                    <Button
+                        onClick={() => handleSell(record._id)}
+                    >
+                        sell
+                    </Button>
                 </Space>
             ),
 
@@ -233,6 +246,16 @@ const Product: React.FC = () => {
                     setEditIsModalVisible(false);
                 }}
             />
+            <SaleModal
+                productId={productId}
+                visible={isSellModalVisible}
+                onCancel={() => {
+                    setSellIsModalVisible(false);
+
+                }}
+                onOk={() => {
+                    setSellIsModalVisible(false);
+                }} />
         </>
     );
 };
